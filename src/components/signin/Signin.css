@@ -1,0 +1,17 @@
+.white
+{
+    color: lightgray;
+
+}
+
+.white-input
+{
+    border-color: darkgrey;
+    color: white;
+}
+
+.ba {
+    border-style: solid;
+    border-width: 3px;
+
+}

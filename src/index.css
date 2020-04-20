@@ -3,7 +3,7 @@ body {
   font-family: "Arial", monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(to right, #0eff2f, #e9ff00);
+  background: linear-gradient(to right, black, grey);
 }
 
 code {

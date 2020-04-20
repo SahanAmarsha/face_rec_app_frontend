@@ -3,7 +3,7 @@ import './ImageLinkForm.css';
 const ImageLinkForm = ({ onInputChange , onButtonSubmit }) =>{
     return(
         <div>
-            <p className='f3'>
+            <p className='f3 text'>
                 {
                     'This will detect faces in your pictures. give it a try...'
                 }
