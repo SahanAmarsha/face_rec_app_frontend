@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import Particles from "react-particles-js";
 import './App.css';
 import 'tachyons';
-import Clarifai from 'clarifai';
 import Navigation from './components/navigation/Navigation';
 import Logo from './components/logo/Logo';
 import ImageLinkForm from './components/imageLinkForm/ImageLinkForm'
@@ -11,10 +10,6 @@ import FaceRecognition from './components/facerecognition/FaceRecognition'
 import Signin from './components/signin/Signin'
 import Register from './components/register/Register'
 
-
-const app = new Clarifai.App({
-    apiKey: 'f166d73cae8a4451925a9fe43230ef17'
-});
 
 
 
@@ -85,31 +80,34 @@ class App extends Component
 
     onPictureSubmit  = () => {
         this.setState({imageUrl: this.state.input});
-        console.log('clicked');
-        app.models.predict("a403429f2ddf4b49b307e318f00e528b", this.state.input)
+        fetch('http://localhost:3000/imageUrl', {
+            method: 'post',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                input: this.state.input,
+
+            })
+        }).then(response => response.json())
             .then(response => {
                 if (response) {
-                    fetch('http://localhost:3000/image', {
+                    fetch('http://localhost:3000/imageUrl', {
                         method: 'put',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({
                             id: this.state.user.id,
 
                         })
-                            }).then(response => response.json())
-                            .then(count => {
-                                this.setState({
-                                    user : {
-                                        entries: count
-                                    }
-                                })
+                    }).then(response => response.json())
+                        .then(count => {
+                            this.setState({
+                                user : {
+                                    entries: count
+                                }
                             })
+                        })
                 }
                 this.displayFaceBox(this.faceDetection(response));
             }).catch(err=> console.log(err));
-
-
-
     }
 
     displayFaceBox = (box) =>
