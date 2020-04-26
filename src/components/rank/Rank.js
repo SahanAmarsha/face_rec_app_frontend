@@ -1,18 +1,18 @@
 import React from "react";
 
-const Rank = () =>{
+const Rank = ({currentRank}) =>{
     return(
         <div>
             <div className='white f3'>
-                {`Sahan your current rank is...`}
+                {`Sahan your entry count is...`}
             </div>
 
             <div className='white f1'>
-                {`#10`}
+                {currentRank}
             </div>
         </div>
 
     );
-}
+};
 
 export default Rank;

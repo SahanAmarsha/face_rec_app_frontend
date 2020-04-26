@@ -37,29 +37,78 @@ const particlesOptions =  {
     }
 };
 
+const initialState = {
+    input: '',
+    imageUrl: '',
+    box: {},
+    route: 'signin',
+    user: {
+        id: '',
+        name: '',
+        email: '',
+        entries: 0,
+        joined : new Date()
+    }
+};
+
 class App extends Component
 {
 
     constructor() {
         super();
-        this.state = {
-            input: '',
-            imageUrl: '',
-            box: {},
-            route: 'signin'
-        };
+        this.state = initialState;
+    }
+
+    componentDidMount() {
+        fetch('http://localhost:3000')
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(err => 'Unable to connect to the Server please try again later')
     }
 
     onInputChange = (event) => {
         this.setState({input: event.target.value})
     }
 
-    onButtonSubmit  = () => {
+    loadUser = (data) =>
+    {
+        this.setState({
+            user: {
+                id : data.id,
+                name: data.name,
+                email: data.email,
+                entries: data.entries,
+                joined: data.joined
+            }
+        })
+    }
+
+    onPictureSubmit  = () => {
         this.setState({imageUrl: this.state.input});
         console.log('clicked');
         app.models.predict("a403429f2ddf4b49b307e318f00e528b", this.state.input)
-            .then(response => this.displayFaceBox(this.faceDetection(response)))
-            .catch(err=> console.log(err));
+            .then(response => {
+                if (response) {
+                    fetch('http://localhost:3000/image', {
+                        method: 'put',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            id: this.state.user.id,
+
+                        })
+                            }).then(response => response.json())
+                            .then(count => {
+                                this.setState({
+                                    user : {
+                                        entries: count
+                                    }
+                                })
+                            })
+                }
+                this.displayFaceBox(this.faceDetection(response));
+            }).catch(err=> console.log(err));
+
+
 
     }
 
@@ -70,8 +119,11 @@ class App extends Component
 
     onRouteChange = (route) =>
     {
+        if(route=== 'signout'){
+            this.setState(initialState);
+        }
         this.setState({route: route});
-    }
+    };
 
     faceDetection = (data) =>
     {
@@ -96,19 +148,19 @@ class App extends Component
                     this.state.route === 'home' ?
                         <div>
                             <Logo />
-                            <Rank />
+                            <Rank currentRank={this.state.user.entries}/>
                             <ImageLinkForm
                                 onInputChange={this.onInputChange}
-                                onButtonSubmit={this.onButtonSubmit}
+                                onPictureSubmit={this.onPictureSubmit}
                             />
                             <FaceRecognition box={this.state.box} imageUrl = {this.state.imageUrl}/>
                         </div>
                         :
                         (
                             this.state.route === 'signin' ?
-                                <Signin onRouteChange = {this.onRouteChange}/>
+                                <Signin onRouteChange = {this.onRouteChange} loadUser={this.loadUser} />
                                 :
-                                <Register onRouteChange= {this.onRouteChange}/>
+                                <Register loadUser={this.loadUser} onRouteChange= {this.onRouteChange}/>
                         )
 
                 }
